@@ -1,12 +1,13 @@
 #!/bin/bash
 
-FRESH_INSTALL=true
+FRESH_INSTALL=$1
 JAVA_URL="http://download.oracle.com/otn-pub/java/jdk/8u102-b14/jdk-8u102-linux-x64.tar.gz"
 
 
 # DO NOT EDIT VARIABLES
 RESET="\e[0m"
 RED="\e[31m"
+BLUE="\e[34m"
 
 # Checks if java is installed properly or not
 java_exists ()
@@ -19,7 +20,7 @@ elif [[ -n "$JAVA_HOME" ]] && [[ -x "$JAVA_HOME/bin/java" ]];  then
 fi
 
 if [[ "$_java" ]]; then
-    echo "ORACLE JAVA is Successfully Installed at $_java"
+    echo -e "${BLUE}ORACLE JAVA is Successfully Installed at ${RED}${_java}${RESET}"
 else
     echo -e "${RED}Oops!!! No JAVA. Something went wrong...${RESET}"
 fi
@@ -52,17 +53,20 @@ then
 	#START-----INSTALL JAVA-----#
 	if [ -a ~/Downloads/OracleJDK.tar.gz ]
 	then
-		echo "Already Tar file exists!!! Extracting..."
+		echo -e "${RED} Already Tar file exists!!! Extracting Now... ${RESET}"
 	else
 		sudo wget --no-cookies --no-check-certificate --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie" "$JAVA_URL" -O ~/Downloads/OracleJDK.tar.gz
 	fi
 	
-	sudo tar -xzvf ~/Downloads/OracleJDK.tar.gz -C /usr/lib/jvm
-	
+	sudo tar -xzf ~/Downloads/OracleJDK.tar.gz -C /usr/lib/jvm
+		
 
 	cd /usr/lib/jvm/*
 	JAVA_HOME=`pwd`
 	grep -q '^export JAVA_HOME=' ~/.bashrc && sed -i '/^export JAVA_HOME=.*/c\export JAVA_HOME="'${JAVA_HOME}'"' ~/.bashrc || echo 'export JAVA_HOME="'${JAVA_HOME}'"' >> ~/.bashrc	
+	
+	grep -q '^export PATH="$JAVA_HOME:' ~/.bashrc && sed -i '/^export PATH="$JAVA_HOME:.*/c\export PATH="$JAVA_HOME:$PATH"' ~/.bashrc || echo 'export PATH="$JAVA_HOME:$PATH"' >> ~/.bashrc
+
 
 	source ~/.bashrc
 
@@ -73,24 +77,3 @@ then
 else
 	echo -e "Please set ${RED}FRESH_INSTALL${RESET} to remove existing java and install new JAVA..."
 fi
-
-
-java_exists ()
-{
-
-if type -p java; then
-    _java=java
-elif [[ -n "$JAVA_HOME" ]] && [[ -x "$JAVA_HOME/bin/java" ]];  then
-    _java="$JAVA_HOME/bin/java"
-fi
-
-if [[ "$_java" ]]; then
-    echo "ORACLE JAVA is Successfully Installed at $_java"
-else
-    echo -e "${RED}Oops!!! No JAVA. Something went wrong...${RESET}"
-fi
-
-}
-
-
- 
